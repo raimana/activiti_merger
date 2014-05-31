@@ -38,7 +38,7 @@ Additional notes
   
 * If all you want is the WAR without Tomcat then compress the *activiti* folder in a WAR and that's it...
   
-* And I know it's obvious but just in case, $JAVA home must be set.
+* And I know it's obvious but just in case, $JAVA_HOME must be set.
 
 #####################
 #ACTIVITI PROPERTIES#
