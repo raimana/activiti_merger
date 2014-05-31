@@ -1,0 +1,151 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.mana.activiti</groupId>
+		<artifactId>com.mana.activiti.merger.parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>com.mana.activiti.merger.assembly</artifactId>
+
+	<name>Activiti :: Merger :: Assembly</name>
+
+	<packaging>pom</packaging>
+
+	<dependencies>
+		<!-- TOMCAT -->
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat</artifactId>
+			<version>${tomcat.version}</version>
+			<type>tar.gz</type>
+		</dependency>
+		<!-- ACTIVITI -->
+		<dependency>
+			<groupId>org.activiti</groupId>
+			<artifactId>activiti-webapp-explorer2</artifactId>
+			<version>${activiti.version}</version>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>org.activiti</groupId>
+			<artifactId>activiti-ldap</artifactId>
+			<version>${activiti.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.activiti</groupId>
+			<artifactId>activiti-rest</artifactId>
+			<version>${activiti.version}</version>
+		</dependency>
+		<!-- MYSQL -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.8</version>
+				<executions>
+					<execution>
+						<id>unpack-tomcat</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.apache.tomcat</groupId>
+									<artifactId>tomcat</artifactId>
+									<type>tar.gz</type>
+									<outputDirectory>target/assembly-tmp</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+					<execution>
+						<id>unpack-activiti</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.activiti</groupId>
+									<artifactId>activiti-webapp-explorer2</artifactId>
+									<type>war</type>
+									<outputDirectory>target/assembly-tmp/apache-tomcat-${tomcat.version}/webapps/activiti</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-core-libs</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>mysql</groupId>
+									<artifactId>mysql-connector-java</artifactId>
+									<outputDirectory>target/assembly-tmp/apache-tomcat-${tomcat.version}/webapps/activiti/WEB-INF/lib</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.activiti</groupId>
+									<artifactId>activiti-ldap</artifactId>
+									<outputDirectory>target/assembly-tmp/apache-tomcat-${tomcat.version}/webapps/activiti/WEB-INF/lib</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.activiti</groupId>
+									<artifactId>activiti-rest</artifactId>
+									<outputDirectory>target/assembly-tmp/apache-tomcat-${tomcat.version}/webapps/activiti/WEB-INF/lib</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>bin</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/resources/assemblies/assembly.xml</descriptor>
+							</descriptors>
+							<appendAssemblyId>false</appendAssemblyId>
+							<tarLongFileMode>gnu</tarLongFileMode>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>maven-restlet</id>
+			<name>Public online Restlet repository</name>
+			<url>http://maven.restlet.org</url>
+		</repository>
+	</repositories>
+</project>

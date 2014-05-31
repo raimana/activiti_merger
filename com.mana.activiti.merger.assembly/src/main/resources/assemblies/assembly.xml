@@ -1,0 +1,68 @@
+<assembly>
+	<id>bin</id>
+
+	<formats>
+		<format>tar.gz</format>
+	</formats>
+
+	<baseDirectory>apache-tomcat-${tomcat.version}</baseDirectory>
+
+	<fileSets>
+		<fileSet>
+			<directory>target/assembly-tmp/apache-tomcat-${tomcat.version}</directory>
+			<outputDirectory>/</outputDirectory>
+			<!-- EXCLUDE TOMCAT DEFAULT FILES -->
+			<excludes>
+				<exclude>/webapps/**</exclude>
+			</excludes>
+		</fileSet>
+		
+		<fileSet>
+			<directory>src/main/resources/override/tomcat</directory>
+			<outputDirectory>/</outputDirectory>
+			<!-- INCLUDE TOMCAT USER-DEFINED FILES -->
+			<includes>
+				<include>bin/**</include>
+			</includes>
+		</fileSet>
+	
+		<fileSet>
+			<directory>target/assembly-tmp/apache-tomcat-${tomcat.version}/webapps/activiti</directory>
+			<outputDirectory>/webapps/activiti</outputDirectory>
+			<excludes>	
+				<!-- EXCLUDE ACTIVITI DEFAULT FILES -->
+			
+				<!-- Config files -->
+				<exclude>WEB-INF/web.xml</exclude>
+				<exclude>WEB-INF/activiti-standalone-context.xml</exclude>
+				<exclude>WEB-INF/activiti-ui-context.xml</exclude>
+
+				<!-- Demo stuff -->
+  				<exclude>WEB-INF/classes/createTimersProcess.bpmn20.xml</exclude>
+				<exclude>WEB-INF/classes/FixSystemFailureProcess.bpmn20.xml</exclude>
+				<exclude>WEB-INF/classes/FixSystemFailureProcess.png</exclude>
+				<exclude>WEB-INF/classes/Helpdesk.bpmn20.xml</exclude>
+				<exclude>WEB-INF/classes/Helpdesk.png</exclude>
+				<exclude>WEB-INF/classes/oneTaskProcess.bpmn20.xml</exclude>
+				<exclude>WEB-INF/classes/reviewSalesLead.bpmn20.xml</exclude>
+				<exclude>WEB-INF/classes/VacationRequest.bpmn20.xml</exclude>
+				<exclude>WEB-INF/classes/VacationRequest.png</exclude>
+				<exclude>WEB-INF/classes/org/activiti/explorer/demo/**</exclude>
+				<exclude>WEB-INF/classes/org/activiti/rest/demo/**</exclude>
+				<exclude>WEB-INF/classes/org/activiti/explorer/images/**</exclude>
+				<exclude>WEB-INF/classes/org/activiti/rest/images/**</exclude>
+			</excludes>
+		</fileSet>
+		
+		<fileSet>
+			<directory>src/main/resources/override</directory>
+			<outputDirectory>/webapps/activiti</outputDirectory>
+			<includes>
+				<!-- INCLUDE ACTIVITI USER-DEFINED FILES -->
+				<include>**/web.xml</include>
+				<include>**/activiti-standalone-context.xml</include>
+				<include>**/activiti-ui-context.xml</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+</assembly>

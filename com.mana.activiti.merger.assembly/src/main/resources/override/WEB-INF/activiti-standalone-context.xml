@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd">
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="${JDBC_DRIVER}" />
+		<property name="url" value="${JDBC_URL}" />
+		<property name="username" value="${JDBC_USERNAME}" />
+		<property name="password" value="${JDBC_PASSWORD}" />
+		<property name="defaultAutoCommit" value="false" />
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration">
+		<property name="dataSource" ref="dataSource" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="databaseSchemaUpdate" value="true" />
+		<property name="jobExecutorActivate" value="true" />
+		<property name="customFormTypes">
+			<list>
+				<bean class="org.activiti.explorer.form.UserFormType" />
+				<bean class="org.activiti.explorer.form.ProcessDefinitionFormType" />
+				<bean class="org.activiti.explorer.form.MonthFormType" />
+			</list>
+		</property>
+		<property name="configurators">
+			<list>
+				<bean class="org.activiti.ldap.LDAPConfigurator">
+					<!-- Server connection params -->
+					<property name="server" value="${LDAP_URL}" />
+					<property name="port" value="${LDAP_PORT}" />
+					<property name="user" value="${LDAP_USER_DN}" />
+					<property name="password" value="${LDAP_USER_PASSWORD}" />
+
+					<!-- Query params -->
+					<property name="customConnectionParameters">
+						<map>
+							<entry key="java.naming.referral" value="follow" />
+						</map>
+					</property>
+					<property name="baseDn" value="${LDAP_BASE_DN}" />
+					<property name="queryUserByUserId" value="${LDAP_QUERY_USER_BY_UID}" />
+					<property name="queryUserByFullNameLike" value="${LDAP_QUERY_USER_BY_CN}" />
+					<property name="queryGroupsForUser" value="${LDAP_QUERY_GROUP}" />
+
+					<!-- Attribute config -->
+					<property name="userIdAttribute" value="${LDAP_ATTR_UID}" />
+					<property name="userFirstNameAttribute" value="${LDAP_ATTR_GIVENNAME}" />
+					<property name="userLastNameAttribute" value="${LDAP_ATTR_SURNAME}" />
+
+					<property name="groupIdAttribute" value="${LDAP_ATTR_GROUP_ID}" />
+					<property name="groupNameAttribute" value="${LDAP_ATTR_GROUP_NAME}" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean" destroy-method="destroy">
+		<property name="processEngineConfiguration" ref="processEngineConfiguration" />
+	</bean>
+
+	<bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService" />
+	<bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService" />
+	<bean id="taskService" factory-bean="processEngine" factory-method="getTaskService" />
+	<bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService" />
+	<bean id="managementService" factory-bean="processEngine" factory-method="getManagementService" />
+	<bean id="identityService" factory-bean="processEngine" factory-method="getIdentityService" />
+
+	<bean id="activitiLoginHandler" class="org.activiti.explorer.ui.login.DefaultLoginHandler">
+		<property name="identityService" ref="identityService" />
+	</bean>
+
+</beans>
